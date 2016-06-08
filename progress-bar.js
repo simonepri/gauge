@@ -1,6 +1,6 @@
 'use strict'
 var validate = require('aproba')
-var renderTemplate = require('./render-template.js')
+var Template = require('./template.js')
 var wideTruncate = require('./wide-truncate')
 var stringWidth = require('string-width')
 
@@ -11,11 +11,11 @@ module.exports = function (theme, width, completed) {
   if (width <= 0) return ''
   var sofar = Math.round(width * completed)
   var rest = width - sofar
-  var template = [
+  var template = new Template(width, [
     {type: 'complete', value: repeat(theme.complete, sofar), length: sofar},
     {type: 'remaining', value: repeat(theme.remaining, rest), length: rest}
-  ]
-  return renderTemplate(width, template, theme)
+  ])
+  return template.render(theme)
 }
 
 // lodash's way of repeating

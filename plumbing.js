@@ -1,15 +1,15 @@
 'use strict'
 var consoleStrings = require('./console-strings.js')
-var renderTemplate = require('./render-template.js')
+var Template = require('./template.js')
 var validate = require('aproba')
 
 var Plumbing = module.exports = function (theme, template, width) {
   if (!width) width = 80
   validate('OAN', [theme, template, width])
   this.showing = false
-  this.theme = theme
-  this.width = width
-  this.template = template
+  this.setTheme(theme)
+  this.setWidth(width)
+  this.setTemplate(template)
 }
 Plumbing.prototype = {}
 
@@ -20,12 +20,13 @@ Plumbing.prototype.setTheme = function (theme) {
 
 Plumbing.prototype.setTemplate = function (template) {
   validate('A', [template])
-  this.template = template
+  this.template = new Template(this.width, template)
 }
 
 Plumbing.prototype.setWidth = function (width) {
   validate('N', [width])
   this.width = width
+  if (this.template) this.template.setWidth(width)
 }
 
 Plumbing.prototype.hide = function () {
@@ -42,6 +43,6 @@ Plumbing.prototype.show = function (status) {
     values[key] = status[key]
   }
 
-  return renderTemplate(this.width, this.template, values).trim() +
+  return this.template.render(values).trim() +
          consoleStrings.eraseLine() + consoleStrings.gotoSOL()
 }
